@@ -55,15 +55,15 @@ tasks {
         })
     }
 
-//    signPlugin {
-//        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-//        privateKey.set(System.getenv("PRIVATE_KEY"))
-//        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-//    }
+    signPlugin {
+        certificateChain.set(System.getenv("IDEA_CERTIFICATE_CHAIN"))
+        privateKey.set(System.getenv("IDEA_PRIVATE_KEY"))
+        password.set(System.getenv("IDEA_PRIVATE_KEY_PASSWORD"))
+    }
 
-//    publishPlugin {
-//        dependsOn("patchChangelog")
-//        token.set(System.getenv("IDEA_PUBLISH_TOKEN"))
-//        channels.set(listOf((version as String).split("-").getOrElse(1) { "default" }.split('.').first()))
-//    }
+    publishPlugin {
+        dependsOn("patchChangelog")
+        token.set(System.getenv("IDEA_PUBLISH_TOKEN"))
+        channels.set(listOf((version as String).split("-").getOrElse(1) { "default" }.split('.').first()))
+    }
 }
