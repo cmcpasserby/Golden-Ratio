@@ -1,11 +1,14 @@
+import org.jetbrains.changelog.markdownToHTML
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.6.20"
     id("org.jetbrains.intellij") version "1.5.2"
+    id("org.jetbrains.changelog") version "1.3.1"
 }
 
 group = "ca.rightsomegoodgames"
-version = "1.0"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -31,7 +34,25 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("221.1")
-        untilBuild.set("222.*")
+        untilBuild.set("")
+
+        pluginDescription.set(
+            projectDir.resolve("README.md").readText().lines().run {
+                val start = "<!-- Plugin description -->"
+                val end = "<!-- Plugin description end -->"
+
+                if (!containsAll(listOf(start, end))) {
+                    throw GradleException("Plugin description section not found in README.md\n$start ... $end")
+                }
+                subList(indexOf(start) + 1, indexOf(end))
+            }.joinToString("\n").let { markdownToHTML(it) }
+        )
+
+        changeNotes.set(provider {
+            changelog.run {
+                getOrNull(version.get()) ?: getLatest()
+            }.toHTML()
+        })
     }
 
 //    signPlugin {
@@ -39,8 +60,10 @@ tasks {
 //        privateKey.set(System.getenv("PRIVATE_KEY"))
 //        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
 //    }
-//
+
 //    publishPlugin {
-//        token.set(System.getenv("PUBLISH_TOKEN"))
+//        dependsOn("patchChangelog")
+//        token.set(System.getenv("IDEA_PUBLISH_TOKEN"))
+//        channels.set(listOf((version as String).split("-").getOrElse(1) { "default" }.split('.').first()))
 //    }
 }
