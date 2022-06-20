@@ -14,18 +14,31 @@ import com.intellij.util.animation.animation
 import java.awt.Component
 import kotlin.math.sqrt
 
-private val ratio = (1f + sqrt(5f)) / 2f
-private val leftRatio = 1f / ratio
-private val rightRatio = 1f - leftRatio
-
 @State(
     name = "GoldenRationSettings",
     storages = [Storage(value = "GoldenRatio.settings.xml", roamingType = RoamingType.DEFAULT)]
 )
 class GoldenRatioPlugin : PersistentStateComponent<GoldenRatioPlugin.State> {
-    data class State(var autoEnabled: Boolean = true)
+    val defaultRatio = (1f + sqrt(5f)) / 2f
+
+    data class State(
+        var autoEnabled: Boolean = true,
+        var ratio: Float = (1f + sqrt(5f)) / 2f
+    )
 
     private var myState = State()
+
+    var autoEnabled: Boolean
+        get() = myState.autoEnabled
+        set(value) {
+            myState.autoEnabled = value
+        }
+
+    var ratio: Float
+        get() = myState.ratio
+        set(value) {
+            myState.ratio = value
+        }
 
     @Suppress("UnstableApiUsage")
     private val activeAnimators = SmartList<JBAnimator>()
@@ -47,8 +60,11 @@ class GoldenRatioPlugin : PersistentStateComponent<GoldenRatioPlugin.State> {
 
         val closedSet = HashSet<Splitter>()
 
+        val leftProportion = 1f / myState.ratio
+        val rightProportion = 1f - leftProportion
+
         for ((it, first) in splitters) {
-            val value = if (first) leftRatio else rightRatio / splitters.size
+            val value = if (first) leftProportion else rightProportion / splitters.size
             closedSet.add(it)
             setProportion(project, it, value)
         }
@@ -79,16 +95,8 @@ class GoldenRatioPlugin : PersistentStateComponent<GoldenRatioPlugin.State> {
     }
 
     companion object {
-        private val INSTANCE: GoldenRatioPlugin
+        val INSTANCE: GoldenRatioPlugin
             get() = service()
-
-        var isAutoEnabled: Boolean
-            get() = INSTANCE.myState.autoEnabled
-            set(value) {
-                INSTANCE.myState.autoEnabled = value
-            }
-
-        fun applyGoldenRatio(manager: FileEditorManagerImpl, editor: FileEditor) = INSTANCE.applyRatio(manager, editor)
     }
 }
 

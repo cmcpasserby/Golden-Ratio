@@ -10,23 +10,23 @@ import com.intellij.openapi.vfs.VirtualFile
 
 class TabChanged : FileEditorManagerListener {
     override fun selectionChanged(event: FileEditorManagerEvent) {
-        if (!GoldenRatioPlugin.isAutoEnabled) return
+        if (!GoldenRatioPlugin.INSTANCE.autoEnabled) return
         val manager = event.manager as? FileEditorManagerImpl ?: return
         val editor = event.newEditor ?: return
-        GoldenRatioPlugin.applyGoldenRatio(manager, editor)
+        GoldenRatioPlugin.INSTANCE.applyRatio(manager, editor)
     }
 
     override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
-        if (!GoldenRatioPlugin.isAutoEnabled) return
+        if (!GoldenRatioPlugin.INSTANCE.autoEnabled) return
         val manager = source as? FileEditorManagerImpl ?: return
         val editor = manager.selectedEditor ?: return
-        GoldenRatioPlugin.applyGoldenRatio(manager, editor)
+        GoldenRatioPlugin.INSTANCE.applyRatio(manager, editor)
     }
 
     override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
-        if (!GoldenRatioPlugin.isAutoEnabled) return
+        if (!GoldenRatioPlugin.INSTANCE.autoEnabled) return
         val manager = source as? FileEditorManagerImpl ?: return
         val editor = manager.selectedEditor ?: return
-        GoldenRatioPlugin.applyGoldenRatio(manager, editor)
+        GoldenRatioPlugin.INSTANCE.applyRatio(manager, editor)
     }
 }

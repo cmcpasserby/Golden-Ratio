@@ -8,10 +8,14 @@ plugins {
 }
 
 group = "ca.rightsomegoodgames"
-version = "1.0.0"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin

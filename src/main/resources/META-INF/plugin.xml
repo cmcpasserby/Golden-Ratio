@@ -7,16 +7,17 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="GoldenRatioPlugin"/>
+        <applicationConfigurable groupId="editor" instance="settings.GoldenRatioConfigurable"/>
     </extensions>
 
     <applicationListeners>
         <listener class="listeners.TabChanged" topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
     </applicationListeners>
     <actions>
-        <action id="actions.GoldenRatioToggleAction" class="actions.GoldenRatioToggleAction" text="Toggle Auto GoldenRatio">
+        <action id="actions.GoldenRatioToggleAction" class="actions.GoldenRatioToggleAction">
             <add-to-group group-id="EditorTabsGroup" anchor="after" relative-to-action="PrevSplitter"/>
         </action>
-        <action id="actions.GoldenRatioApplyAction" class="actions.GoldenRatioApplyAction" text="Resize Using GoldenRatio">
+        <action id="actions.GoldenRatioApplyAction" class="actions.GoldenRatioApplyAction">
             <add-to-group group-id="EditorTabsGroup" anchor="after" relative-to-action="PrevSplitter"/>
         </action>
     </actions>
