@@ -24,7 +24,7 @@ class GoldenRatioConfigurable : SearchableConfigurable, Configurable.NoScroll {
         group(message("settings.group.generalSettings")) {
             row { checkBox(autoEnabled) }
             row(message("settings.ratioLabelPrefix")) {
-                spinner(0.0..100.0, step = 0.01)
+                spinner(0.0..100.0, step = 0.001)
                     .bind(
                         {(it.value as Double).toFloat()}, {it, value -> it.value = value.toDouble() },
                         MutableProperty(settings::ratio::get, settings::ratio::set)
