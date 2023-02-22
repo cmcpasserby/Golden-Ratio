@@ -1,4 +1,3 @@
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.*
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.impl.EditorsSplitters
@@ -55,7 +54,6 @@ class GoldenRatioPlugin : PersistentStateComponent<GoldenRatioPlugin.State> {
         activeAnimators.forEach { Disposer.dispose(it) }
         activeAnimators.clear()
 
-        val project = manager.project
         val splitters = getSplittersForEditor(manager, editor.component)
 
         val closedSet = HashSet<Splitter>()
@@ -66,23 +64,23 @@ class GoldenRatioPlugin : PersistentStateComponent<GoldenRatioPlugin.State> {
         for ((it, first) in splitters) {
             val value = if (first) leftProportion else rightProportion / splitters.size
             closedSet.add(it)
-            setProportion(project, it, value)
+            setProportion(it, value)
         }
 
         for (it in getAllSplitters(manager)) {
             if (it in closedSet) continue
-            setProportion(project, it, 0.5f)
+            setProportion(it, 0.5f)
         }
     }
 
     @Suppress("UnstableApiUsage")
-    private fun setProportion(disposable: Disposable, splitter: Splitter, value: Float) {
+    private fun setProportion(splitter: Splitter, value: Float) {
         if (!Registry.`is`("ide.experimental.ui.animations") || DrawUtil.isSimplifiedUI()) {
             splitter.proportion = value
             return
         }
 
-        val animator = JBAnimator(disposable).also { activeAnimators.add(it) }
+        val animator = JBAnimator().also { activeAnimators.add(it) }
         animator.animate(
             animation(splitter.proportion, value, splitter::setProportion).apply {
                 duration = 350
@@ -122,6 +120,7 @@ private fun getSplittersForEditor(manager: FileEditorManagerImpl, editor: Compon
 private fun getAllSplitters(manager: FileEditorManagerImpl): Set<Splitter> {
     val set = HashSet<Splitter>()
 
+    // TODO get all splitters for current window only
     for (editor in manager.allEditors) {
         val splitters = getSplittersForEditor(manager, editor.component).map { it.first }
         set.addAll(splitters)
