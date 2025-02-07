@@ -4,7 +4,6 @@ import com.intellij.openapi.fileEditor.impl.EditorsSplitters
 import com.intellij.openapi.fileEditor.impl.FileEditorManagerImpl
 import com.intellij.openapi.ui.Splitter
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.registry.Registry
 import com.intellij.ui.ClientProperty
 import com.intellij.ui.DrawUtil
 import com.intellij.util.SmartList
@@ -22,7 +21,9 @@ class GoldenRatioPlugin : PersistentStateComponent<GoldenRatioPlugin.State> {
 
     data class State(
         var autoEnabled: Boolean = true,
-        var ratio: Float = (1f + sqrt(5f)) / 2f
+        var ratio: Float = (1f + sqrt(5f)) / 2f,
+        var animate: Boolean = true,
+        var animationDuration: Int = 350,
     )
 
     private var myState = State()
@@ -37,6 +38,18 @@ class GoldenRatioPlugin : PersistentStateComponent<GoldenRatioPlugin.State> {
         get() = myState.ratio
         set(value) {
             myState.ratio = value
+        }
+
+    var animate: Boolean
+        get() = myState.animate
+        set(value) {
+            myState.animate = value
+        }
+
+    var animationDuration: Int
+        get() = myState.animationDuration
+        set(value) {
+            myState.animationDuration = value
         }
 
     @Suppress("UnstableApiUsage")
@@ -75,7 +88,7 @@ class GoldenRatioPlugin : PersistentStateComponent<GoldenRatioPlugin.State> {
 
     @Suppress("UnstableApiUsage")
     private fun setProportion(splitter: Splitter, value: Float) {
-        if (!Registry.`is`("ide.experimental.ui.animations") || DrawUtil.isSimplifiedUI()) {
+        if (!myState.animate || DrawUtil.isSimplifiedUI()) {
             splitter.proportion = value
             return
         }
@@ -83,7 +96,7 @@ class GoldenRatioPlugin : PersistentStateComponent<GoldenRatioPlugin.State> {
         val animator = JBAnimator().also { activeAnimators.add(it) }
         animator.animate(
             animation(splitter.proportion, value, splitter::setProportion).apply {
-                duration = 350
+                duration = myState.animationDuration
                 runWhenExpiredOrCancelled {
                     Disposer.dispose(animator)
                     activeAnimators.remove(animator)

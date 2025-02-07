@@ -20,6 +20,9 @@ class GoldenRatioConfigurable : SearchableConfigurable, Configurable.NoScroll {
     private val autoEnabled
         get() = CheckboxDescriptor(message("settings.autoLabel"), settings::autoEnabled)
 
+    private val animate
+        get() = CheckboxDescriptor(message("settings.animateResize"), settings::animate)
+
     private val myPanel = panel {
         group(message("settings.group.generalSettings")) {
             row { checkBox(autoEnabled) }
@@ -31,6 +34,11 @@ class GoldenRatioConfigurable : SearchableConfigurable, Configurable.NoScroll {
                     )
                     .gap(RightGap.SMALL)
                 label(message("settings.ratioLabelSuffix", settings.defaultRatio))
+            }
+            row { checkBox(animate) }
+            row(message("settings.animationDuration")) {
+                intTextField(10..1000, 1)
+                    .bindIntText(settings::animationDuration)
             }
         }
     }
